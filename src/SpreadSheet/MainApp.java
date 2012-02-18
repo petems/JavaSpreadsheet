@@ -9,7 +9,7 @@ package SpreadSheet;
 
 /**
  *
- * @author Peter Morley-Souter
+ * @author Peter Souter
  */
 
 //Import tools
@@ -37,7 +37,7 @@ public class MainApp extends JPanel implements MouseListener {
 	private static void run() {
 
 		// Main window setup
-		JFrame MainFrame = new JFrame("PRA Coursework 3 - Spreadsheet");
+		JFrame MainFrame = new JFrame("JavaSpreadsheet 0.1");
 		MainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		MainApp Coursework = new MainApp();
 		MainFrame.getContentPane().add(Coursework.MainSplitPane);
