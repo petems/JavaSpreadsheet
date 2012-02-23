@@ -13,12 +13,15 @@ package SpreadSheet;
  */
 
 //Import tools
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import java.util.*;
-import java.util.regex.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainApp extends JPanel implements MouseListener {
 	private JPanel NewPane;
@@ -178,7 +181,7 @@ public class MainApp extends JPanel implements MouseListener {
 			aSpreadSheetGrid[0][i] = aSpreadColumn;
 			aSpreadColumn.Row = 0;
 			aSpreadColumn.Column = i;
-			aSpreadColumn.setText(alphabet(i));
+			aSpreadColumn.setText(getColumnHeader(i));
 			aSpreadColumn.setBorder(BorderFactory.createRaisedBevelBorder());
 			aSpreadColumn.setBackground(Color.lightGray);
 			aSpreadColumn.setForeground(Color.black);
@@ -275,142 +278,7 @@ public class MainApp extends JPanel implements MouseListener {
 			x.setHorizontalAlignment(SwingConstants.LEFT);
 	}
 
-	// Converts numbers to column headers (ie. 1 = A...26 = Z, 27 = AA)
-	public String alphabet(long i) {
-		// A recursive statement for turning numbers into letters
-		// Used for making column headers
-		if (i == 0)
-			return "Z";
-		if (i == 1)
-			return "A";
-		if (i == 2)
-			return "B";
-		if (i == 3)
-			return "C";
-		if (i == 4)
-			return "D";
-		if (i == 5)
-			return "E";
-		if (i == 5)
-			return "E";
-		if (i == 6)
-			return "F";
-		if (i == 7)
-			return "G";
-		if (i == 8)
-			return "H";
-		if (i == 9)
-			return "I";
-		if (i == 10)
-			return "J";
-		if (i == 11)
-			return "K";
-		if (i == 12)
-			return "L";
-		if (i == 13)
-			return "M";
-		if (i == 14)
-			return "N";
-		if (i == 15)
-			return "O";
-		if (i == 16)
-			return "P";
-		if (i == 17)
-			return "Q";
-		if (i == 18)
-			return "R";
-		if (i == 19)
-			return "S";
-		if (i == 20)
-			return "T";
-		if (i == 21)
-			return "U";
-		if (i == 22)
-			return "V";
-		if (i == 23)
-			return "W";
-		if (i == 24)
-			return "X";
-		if (i == 25)
-			return "Y";
-		if (i == 26)
-			return "Z";
-		if (i > 26) {
-			long ColFirst;
-			ColFirst = i / 26;
-			if ((i % 26) == 0) {
-				ColFirst -= 1;
-			}
-			return alphabet(ColFirst) + alphabet(i % 26);
-		}
-		return "?";
-	}
-
-	// Converts letters to numbers (ie. A = 1...Z = 26)
-	public int alphatonum(String a) {
-		// A recursive statement for turning numbers into letters
-		// Used for making column headers
-		if (a.equals("A"))
-			return 1;
-		if (a.equals("B"))
-			return 2;
-		if (a.equals("C"))
-			return 3;
-		if (a.equals("D"))
-			return 4;
-		if (a.equals("E"))
-			return 5;
-		if (a.equals("F"))
-			return 6;
-		if (a.equals("G"))
-			return 7;
-		if (a.equals("H"))
-			return 8;
-		if (a.equals("I"))
-			return 9;
-		if (a.equals("J"))
-			return 10;
-		if (a.equals("K"))
-			return 11;
-		if (a.equals("L"))
-			return 12;
-		if (a.equals("M"))
-			return 13;
-		if (a.equals("N"))
-			return 14;
-		if (a.equals("O"))
-			return 15;
-		if (a.equals("P"))
-			return 16;
-		if (a.equals("Q"))
-			return 17;
-		if (a.equals("R"))
-			return 18;
-		if (a.equals("S"))
-			return 19;
-		if (a.equals("T"))
-			return 20;
-		if (a.equals("U"))
-			return 21;
-		if (a.equals("V"))
-			return 22;
-		if (a.equals("W"))
-			return 23;
-		if (a.equals("X"))
-			return 24;
-		if (a.equals("Y"))
-			return 25;
-		if (a.equals("Z"))
-			return 26;
-		if (a.length() >= 2) {
-			String firstone = "" + a.charAt(0);
-			String secoundone = "" + a.charAt(1);
-			return 26 * alphatonum(firstone) + alphatonum(secoundone);
-		}
-		return 0;
-	}
-
-	// Checks if the input is formulae
+    // Checks if the input is formulae
 	public String isItFormulae(String y) {
 		if (y.matches("[=][A-Z]+[0-9]+"))
 			return SetFormula(y);
@@ -517,7 +385,7 @@ public class MainApp extends JPanel implements MouseListener {
 		if (FormulaeMatch.matches()) {
 			String aColumn = FormulaeMatch.group(1);
 			String aRow = FormulaeMatch.group(2);
-			return aSpreadSheetGrid[Integer.parseInt(aRow)][alphatonum(aColumn)];
+			return aSpreadSheetGrid[Integer.parseInt(aRow)][columnHeaderToNumber(aColumn)];
 		}
 		// It should not reach this stage, but a return statement must be given
 		return aSpreadSheetGrid[1][1];
@@ -601,5 +469,28 @@ public class MainApp extends JPanel implements MouseListener {
 
 	public void mouseClicked(MouseEvent e) {
 	}
+
+        public String getColumnHeader(long columnNumber) {
+        StringBuilder stringBuilder = new StringBuilder();
+        while (columnNumber >= 0) {
+            stringBuilder.insert(0, (char) (columnNumber % 26 + 'A'));
+            columnNumber = columnNumber / 26 - 1;
+        }
+        return stringBuilder.toString();
+    }
+
+
+    private int columnHeaderToNumber(String columnHeader) {
+        int convertedHeader = 0;
+        char[] splitHeader = columnHeader.toCharArray();
+        for (int x = 0; x < splitHeader.length; x++){
+        convertedHeader += charToNum(splitHeader[x]);
+        }
+        return convertedHeader;
+    }
+
+    private int charToNum(char c) {
+        return (int) c - 64;
+    }
 
 }
